@@ -1,0 +1,15 @@
+version: '3.8'
+
+volumes:
+  pg_data:
+
+services:
+  postgres:
+    image: postgres:12.2-alpine
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: covid19
+      POSTGRES_HOST_AUTH_METHOD: trust
