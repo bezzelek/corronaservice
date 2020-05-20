@@ -2,10 +2,10 @@ from datetime import datetime
 from socket import gethostname
 
 from flask import Flask, jsonify, request
-from sqlalchemy import and_, func, literal_column, literal
+from sqlalchemy import and_, func, literal
 
-from models import Covid19, SESSION
-from schemas import Covid19CountrySchema, Covid19TotalSchema, ArgumentsSchema
+from scrapping.models import Covid19, SESSION
+from scrapping.schemas import Covid19CountrySchema, Covid19TotalSchema, ArgumentsSchema
 
 app = Flask('Coronavirus data')
 

@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Date, UniqueConst
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from settings import DATABASE_URL
+from root.settings import DATABASE_URL
 
 BaseModel = declarative_base()
 engine = create_engine(DATABASE_URL, echo=True)

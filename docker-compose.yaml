@@ -13,3 +13,9 @@ services:
     environment:
       POSTGRES_DB: covid19
       POSTGRES_HOST_AUTH_METHOD: trust
+
+  rabbit:
+    image: rabbitmq:3.8.3-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'

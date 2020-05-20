@@ -1,23 +1,14 @@
 import csv
 from datetime import datetime, timedelta
 
-from celery import Celery
-from sqlalchemy import literal
+from celery.task import periodic_task
 
-from models import session_scope, Covid19, SESSION
-from scrapper import download_csv
-from settings import DATA_FILENAME
+from scrapping.models import session_scope, Covid19
+from scrapping.scrapper import download_csv
+from root.settings import DATA_FILENAME
 
 
-# app = Celery()
-#
-#
-# @app.on_after_configure.connect
-# def setup_periodic_tasks(sender):
-#     sender.add_periodic_task(60.0, store_csv_data())   # 60 seconds
-#
-#
-# @app.task
+@periodic_task(run_every=timedelta(hours=1))
 def store_csv_data():
     csv_path = download_csv(DATA_FILENAME)
     with session_scope() as session, open(csv_path) as covidcsv:
