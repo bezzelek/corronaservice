@@ -1,6 +1,6 @@
 restart: down up
-
 init: create-tables scrap-data
+
 
 ### Compose shortcuts
 up:
@@ -15,11 +15,13 @@ logs:
 psql:
 	docker-compose exec postgres psql -U postgres
 
-### Project shortcuts
 
+### Project shortcuts
 create-tables:
 	python src/models.py
 
 scrap-data:
 	python src/tasks.py
 
+celery:
+	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" celery -E -A root worker --beat --loglevel=info
