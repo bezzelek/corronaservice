@@ -18,10 +18,10 @@ psql:
 
 ### Project shortcuts
 create-tables:
-	python src/models.py
+	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" python src/scrapping/models.py
 
 scrap-data:
-	python src/tasks.py
+	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" python src/scrapping/tasks.py
 
 celery:
 	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" celery -E -A root worker --beat --loglevel=info
