@@ -11,7 +11,6 @@ from root.settings import DATABASE_URL
 BaseModel = declarative_base()
 engine = create_engine(DATABASE_URL, echo=True)
 Session = sessionmaker(bind=engine)
-SESSION = Session()
 
 
 @contextmanager

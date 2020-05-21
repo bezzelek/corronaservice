@@ -26,3 +26,8 @@ class Covid19TotalSchema(Schema):
 
 class ArgumentsSchema(Schema):
     date = fields.Date(missing=dd.today)
+
+
+COUNTRY_SCHEMA = Covid19CountrySchema()
+TOTAL_SCHEMA = Covid19TotalSchema()
+ARGUMENTS_SCHEMA = ArgumentsSchema()

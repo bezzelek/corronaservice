@@ -1,11 +1,11 @@
-from datetime import datetime
 from socket import gethostname
 
 from flask import Flask, jsonify, request
-from sqlalchemy import and_, func, literal
+from sqlalchemy import func
 
-from scrapping.models import Covid19, SESSION
-from scrapping.schemas import Covid19CountrySchema, Covid19TotalSchema, ArgumentsSchema
+from scrapping.models import Covid19, session_scope
+from scrapping.schemas import COUNTRY_SCHEMA, TOTAL_SCHEMA, ARGUMENTS_SCHEMA
+
 
 app = Flask('Coronavirus data')
 
@@ -18,91 +18,73 @@ def index():
 @app.route('/<country>/<date>')
 def country_by_date(country: str, date: str):
     country_upper = country.upper()
-    date_style = datetime.strptime(date, "%Y-%m-%d").date()
-    record = SESSION.query(Covid19).filter_by(countries_iso_alpha_2=country_upper, record_date=date_style).one()
-    # record = SESSION.query(Covid19).filter(and_(
-    #     Covid19.countries_iso_alpha_2 == country.upper(),
-    #     Covid19.record_date == date_style
-    #     )).one()
-
-    schema = Covid19CountrySchema()
-    #   return schema.dump(record)
-    result = schema.dump(record)
-
+    arguments = ARGUMENTS_SCHEMA.load({'date': date})
+    with session_scope() as session:
+        record = session.query(Covid19).filter(
+            Covid19.countries_iso_alpha_2 == country_upper,
+            Covid19.record_date == arguments['date']
+        ).one()
+        result = COUNTRY_SCHEMA.dump(record)
     return result
-
-
-# @app.route('/<country>')
-# def country_to_date(country: str):
-#     argument_schema = ArgumentsSchema()
-#     arguments = argument_schema.load(request.args)
-#     record = SESSION.query(Covid19).filter(and_(
-#         Covid19.countries_iso_alpha_2 == country.upper(),
-#         Covid19.record_date <= arguments['date']
-#     )).order_by(Covid19.record_date.desc()).limit(1).one()
-#
-#     schema = Covid19TotalSchema()
-#     result = schema.dump(record)
-#     return result
 
 
 @app.route('/<country>')
 def total_to_date_by_country(country: str):
     country_upper = country.upper()
-    argument_schema = ArgumentsSchema()
-    arguments = argument_schema.load(request.args)
-    record = SESSION.query(
-        func.sum(Covid19.new_cases).label('total_cases'),
-        func.sum(Covid19.new_death).label('total_death')
-    ).group_by(
-        Covid19.countries_iso_alpha_2
-    ).filter(
-        and_(
+    arguments = ARGUMENTS_SCHEMA.load(request.args)
+    with session_scope() as session:
+        record = session.query(
+            func.max(Covid19.record_date).label('date'),
+            func.sum(Covid19.new_cases).label('total_cases'),
+            func.sum(Covid19.new_death).label('total_death')
+        ).group_by(
+            Covid19.countries_iso_alpha_2
+        ).filter(
             Covid19.countries_iso_alpha_2 == country_upper,
             Covid19.record_date <= arguments['date']
-        )
-    ).one()
-    schema = Covid19TotalSchema()
-    result = schema.dump({
-        "record_date": arguments['date'],
-        "country_name": country_upper,
-        "total_death": record.total_death,
-        "total_cases": record.total_cases,
-    })
-    return result
+        ).one()
+        result = TOTAL_SCHEMA.load({
+            "date": record.date,
+            "country": country_upper,
+            "total_death": record.total_death,
+            "total_cases": record.total_cases,
+        })
+    return TOTAL_SCHEMA.dump(result)
 
 
-@app.route('/total')
+@app.route('/world')
 def world_total_to_date():
-    argument_schema = ArgumentsSchema()
-    arguments = argument_schema.load(request.args)
-    record = SESSION.query(
-        func.sum(Covid19.new_cases).label('total_cases'),
-        func.sum(Covid19.new_death).label('total_death')
-    ).filter(Covid19.record_date <= arguments['date']).one()
-    schema = Covid19TotalSchema()
-    result = schema.dump({
-        "record_date": arguments['date'],
-        "country_name": 'World',
-        "total_death": record.total_death,
-        "total_cases": record.total_cases,
-    })
-    return result
+    arguments = ARGUMENTS_SCHEMA.load(request.args)
+    with session_scope() as session:
+        record = session.query(
+            func.max(Covid19.record_date).label('date'),
+            func.sum(Covid19.new_cases).label('total_cases'),
+            func.sum(Covid19.new_death).label('total_death')
+        ).filter(Covid19.record_date <= arguments['date']).one()
+        result = TOTAL_SCHEMA.load({
+            "date": record.date,
+            "country": 'World',
+            "total_death": record.total_death,
+            "total_cases": record.total_cases,
+        })
+    return TOTAL_SCHEMA.dump(result)
 
 
-@app.route('/daily_total/<date>')
+@app.route('/world/<date>')
 def daily_total(date: str):
-    argument_schema = ArgumentsSchema()
-    arguments = argument_schema.load({'date': date})
-    record = SESSION.query(
-        literal('World').label('country'),
-        func.max(Covid19.record_date).label('date'),
-        func.sum(Covid19.new_cases).label('new_cases'),
-        func.sum(Covid19.new_death).label('new_death')
-    ).filter(Covid19.record_date == arguments['date']).one()
-    schema = Covid19CountrySchema()
-    result = schema.load(record._asdict())
-    return schema.dump(result)
+    arguments = ARGUMENTS_SCHEMA.load({'date': date})
+    with session_scope() as session:
+        record = session.query(
+            func.sum(Covid19.new_cases).label('new_cases'),
+            func.sum(Covid19.new_death).label('new_death')
+        ).filter(Covid19.record_date == arguments['date']).one()
+        result = COUNTRY_SCHEMA.load({
+            "date": arguments['date'],
+            "country": 'World',
+            "new_cases": record.new_cases,
+            "new_death": record.new_death,
+        })
+    return COUNTRY_SCHEMA.dump(result)
 
 
 if __name__ == '__main__':
