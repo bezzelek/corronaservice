@@ -1,0 +1,9 @@
+[run]
+omit=*/__init__*
+     */alembic*
+     */test*
+
+[report]
+fail_under=80
+skip_covered=True
+sort=Cover

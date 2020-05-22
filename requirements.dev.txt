@@ -1,3 +1,12 @@
 -r requirements.txt
 
 ipython==7.13.0
+
+astroid==2.4.1
+pylint==2.5.2
+bandit==1.6.2
+safety==1.9.0
+mypy==0.770
+
+pytest==5.4.2
+pytest-cov==2.9.0
