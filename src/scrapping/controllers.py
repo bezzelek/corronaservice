@@ -1,3 +1,8 @@
+""" Controllers that returns requested data. """
+
+import typing as t
+from datetime import date as dd
+
 from flask import request
 from sqlalchemy import func
 
@@ -7,7 +12,13 @@ from scrapping.schemas import ARGUMENTS_SCHEMA, COVID19_SCHEMA
 
 
 @bp.route('/<country>/<date>')
-def country_by_date(country: str, date: str):
+def country_by_date(country: str, date: str) -> t.Dict[str, t.Union[dd, str, int]]:
+    """ Controller that returns data for the requested date in requested country.
+
+    :param country: Name of the country which expressed in ISO Alpha-2 format. Example: "UA" - Ukraine
+    :param date: Date which expressed in format 2020-01-30
+    :return: Number of cases and death registered in specific country in specific day.
+    """
     country_upper = country.upper()
     arguments = ARGUMENTS_SCHEMA.load({'date': date})
     with session_scope() as session:
@@ -20,7 +31,13 @@ def country_by_date(country: str, date: str):
 
 
 @bp.route('/<country>')
-def total_to_date_by_country(country: str):
+def total_to_date_by_country(country: str) -> t.Dict[str, t.Union[dd, str, int]]:
+    """ Controller that returns calculated data about amount of cases and death from the beginning of statistical
+    calculations for the requested country.
+
+    :param country: Name of the country which expressed in ISO Alpha-2 format. Example: "UA" - Ukraine
+    :return: Number of cases and death registered in country from the beginning of statistical calculations
+    """
     country_upper = country.upper()
     arguments = ARGUMENTS_SCHEMA.load(request.args)
     with session_scope() as session:
@@ -44,7 +61,13 @@ def total_to_date_by_country(country: str):
 
 
 @bp.route('/world')
-def world_total_to_date():
+def world_total_to_date() -> t.Dict[str, t.Union[dd, str, int]]:
+    """ Controller that returns calculated data about amount of cases and death from the beginning of statistical
+    calculations in whole World
+
+    :return: Calculated data about amount of cases and death from the beginning of statistical calculations in whole
+    World.
+    """
     arguments = ARGUMENTS_SCHEMA.load(request.args)
     with session_scope() as session:
         record = session.query(
@@ -62,7 +85,12 @@ def world_total_to_date():
 
 
 @bp.route('/world/<date>')
-def daily_total(date: str):
+def daily_total(date: str) -> t.Dict[str, t.Union[dd, str, int]]:
+    """ Controller that returns calculated data about amount of cases and death in whole World during specific day.
+
+    :param date: Date which expressed in format 2020-01-30
+    :return: Calculated data about amount of cases and death in whole World during specific day.
+    """
     arguments = ARGUMENTS_SCHEMA.load({'date': date})
     with session_scope() as session:
         record = session.query(

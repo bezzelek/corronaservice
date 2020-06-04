@@ -41,4 +41,4 @@ mypy:
 	@mypy src
 
 pytest:
-	@pytest -ra
+	@PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" pytest -ra
