@@ -3,18 +3,15 @@
 import typing as t
 from contextlib import contextmanager
 from datetime import datetime, date
-from os import environ
 
 from sqlalchemy import create_engine, Column, Integer, String, Date, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session as SASession
 
-from root.settings import DATABASE_URL, DATABASE_TEST_URL
+from root.settings import DATABASE_URL
 
 BaseModel = declarative_base()
 engine = create_engine(DATABASE_URL, echo=True)
-if environ.get('TEST'):
-    engine = create_engine(DATABASE_TEST_URL, echo=True)
 Session = sessionmaker(bind=engine)
 
 

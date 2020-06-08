@@ -41,4 +41,4 @@ mypy:
 	@mypy src
 
 pytest:
-	@PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" TEST=1 pytest -ra --cov=src
+	@PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" DB_URL=postgres://postgres@127.0.0.1:5432/tests pytest -ra --cov=src
