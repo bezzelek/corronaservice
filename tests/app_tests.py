@@ -1,5 +1,6 @@
 import typing as t
-from datetime import datetime
+from datetime import datetime, date
+
 from unittest import TestCase
 
 from flask.testing import FlaskClient
