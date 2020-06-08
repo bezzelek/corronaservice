@@ -1,3 +1,5 @@
+""" File contains settings of Celery. """
+
 from celery import Celery
 
 from root.settings import BROKER_URL, CELERY_WORKERS

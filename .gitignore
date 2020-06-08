@@ -135,3 +135,4 @@ dmypy.json
 examples/
 geckodriver.log
 WHO-COVID-19-global-data.csv
+celerybeat-schedule.*
