@@ -19,7 +19,7 @@ class AppTests(TestCase):
         BaseModel.metadata.create_all(engine)
         test_date = datetime.strptime('2020-05-27', "%Y-%m-%d").date()
         add_record = Covid19(
-            record_date=test_date,
+            record_date=date(2020, 05, 27),
             countries_iso_alpha_2='UA',
             country_name='Ukraine',
             new_death=10,
