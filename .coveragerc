@@ -4,6 +4,6 @@ omit=*/__init__*
      */test*
 
 [report]
-fail_under=80
+fail_under=50
 skip_covered=True
 sort=Cover

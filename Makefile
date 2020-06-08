@@ -41,4 +41,4 @@ mypy:
 	@mypy src
 
 pytest:
-	@pytest -ra
+	@PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" TEST=1 pytest -ra --cov=src

@@ -1,3 +1,5 @@
+""" Root of the scrapping module. """
+
 from . import bp
 from . import models
 from . import schemas
