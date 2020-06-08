@@ -1,3 +1,4 @@
+all: safety bandit mypy pylint pytest
 restart: down up
 init: create-tables scrap-data
 
@@ -25,3 +26,19 @@ scrap-data:
 
 celery:
 	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" celery -E -A root worker --beat --loglevel=info
+
+### Linters
+safety:
+	@safety check --full-report
+
+bandit:
+	@bandit -c bandit.yml -r src
+
+pylint:
+	@pylint src
+
+mypy:
+	@mypy src
+
+pytest:
+	@PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" TEST=1 pytest -ra --cov=src
