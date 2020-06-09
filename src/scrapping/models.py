@@ -1,35 +1,11 @@
 """ Module that contains template of the database. """
 
 import typing as t
-from contextlib import contextmanager
 from datetime import datetime, date
-from os import environ
 
-from sqlalchemy import create_engine, Column, Integer, String, Date, UniqueConstraint
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session as SASession
+from sqlalchemy import Column, Integer, String, Date, UniqueConstraint
 
-from root.settings import DATABASE_URL, DATABASE_TEST_URL
-
-BaseModel = declarative_base()
-engine = create_engine(DATABASE_URL, echo=True)
-if environ.get('TEST'):
-    engine = create_engine(DATABASE_TEST_URL, echo=True)
-Session = sessionmaker(bind=engine)
-
-
-@contextmanager
-def session_scope() -> t.Iterator[SASession]:
-    """ Provide a transactional scope around a series of operations. """
-    session = Session()
-    try:
-        yield session
-        session.commit()
-    except Exception:
-        session.rollback()
-        raise
-    finally:
-        session.close()
+from root.db import BaseModel, engine
 
 
 class Covid19(BaseModel):  # type: ignore

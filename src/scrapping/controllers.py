@@ -6,8 +6,9 @@ from datetime import date as dd
 from flask import request
 from sqlalchemy import func
 
+from root.db import session_scope
 from scrapping.bp import bp
-from scrapping.models import session_scope, Covid19
+from scrapping.models import Covid19
 from scrapping.schemas import ARGUMENTS_SCHEMA, COVID19_SCHEMA
 
 
