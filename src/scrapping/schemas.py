@@ -26,5 +26,12 @@ class ArgumentsSchema(Schema):
     date = fields.Date(missing=dd.today)
 
 
+class ErrorSchema(Schema):
+    code = fields.Int()
+    message = fields.Str()
+    details = fields.Dict(keys=fields.Str(), values=fields.List(fields.Str()), required=False)
+
+
 COVID19_SCHEMA = Covid19Schema()
 ARGUMENTS_SCHEMA = ArgumentsSchema()
+ERROR_SCHEMA = ErrorSchema()

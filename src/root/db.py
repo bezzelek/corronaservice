@@ -5,10 +5,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
-from root.settings import DATABASE_URL
+from root.settings import DATABASE_URL, DEBUG
 
 BaseModel = declarative_base()
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=DEBUG)
 SessionMaker = sessionmaker(bind=engine)
 
 
