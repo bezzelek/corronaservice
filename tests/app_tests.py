@@ -4,8 +4,9 @@ from unittest import TestCase
 
 from flask.testing import FlaskClient
 
+from root.db import BaseModel, engine, session_scope
+from scrapping.models import Covid19
 from app import app
-from scrapping.models import BaseModel, engine, Covid19, session_scope
 
 
 class AppTests(TestCase):

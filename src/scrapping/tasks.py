@@ -7,9 +7,10 @@ from datetime import datetime, timedelta
 from celery.task import periodic_task
 from sqlalchemy import func
 
-from scrapping.models import session_scope, Covid19
-from scrapping.scrapper import download_csv
 from root.settings import DATA_FILENAME
+from root.db import session_scope
+from scrapping.models import Covid19
+from scrapping.scrapper import download_csv
 
 
 @periodic_task(run_every=timedelta(hours=1))
