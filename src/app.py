@@ -34,6 +34,7 @@ def handle_validation_error(error: ValidationError):
     return jsonify(resp), 400
 
 
+@app.errorhandler(404)
 @app.errorhandler(NoResultFound)
 @app.errorhandler(MultipleResultsFound)
 def handle_db_error(_error: t.Union[NoResultFound, MultipleResultsFound]):
@@ -42,6 +43,16 @@ def handle_db_error(_error: t.Union[NoResultFound, MultipleResultsFound]):
         'message': 'No result for requested values.',
     })
     return jsonify(resp), 404
+
+
+@app.errorhandler(500)
+@app.errorhandler(Exception)
+def handle_unexpected_error(_error: Exception):
+    resp = ERROR_SCHEMA.load({
+        'code': 500,
+        'message': 'Internal server error.',
+    })
+    return jsonify(resp), 500
 
 
 if __name__ == '__main__':

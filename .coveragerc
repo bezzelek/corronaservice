@@ -7,3 +7,5 @@ omit=*/__init__*
 fail_under=50
 skip_covered=True
 sort=Cover
+exclude_lines=if __name__ == '__main__':
+              if __name__ == "__main__":
