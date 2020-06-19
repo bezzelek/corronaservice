@@ -5,6 +5,7 @@ from datetime import date as dd
 
 from flask import request
 from sqlalchemy import func
+from sqlalchemy.orm.exc import NoResultFound
 
 from root.db import session_scope
 from scrapping.bp import bp
@@ -76,6 +77,8 @@ def world_total_to_date() -> t.Dict[str, t.Union[dd, str, int]]:
             func.sum(Covid19.new_cases).label('total_cases'),
             func.sum(Covid19.new_death).label('total_death')
         ).filter(Covid19.record_date <= arguments['date']).one()
+        if record.date is None:
+            raise NoResultFound
         result = COVID19_SCHEMA.load({
             "date": record.date,
             "country": 'World',
@@ -98,6 +101,8 @@ def world_total_by_date(date: str) -> t.Dict[str, t.Union[dd, str, int]]:
             func.sum(Covid19.new_cases).label('new_cases'),
             func.sum(Covid19.new_death).label('new_death')
         ).filter(Covid19.record_date == arguments['date']).one()
+        if record.new_cases is None:
+            raise NoResultFound
         result = COVID19_SCHEMA.load({
             "date": arguments['date'],
             "country": 'World',
