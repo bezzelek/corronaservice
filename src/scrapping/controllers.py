@@ -46,16 +46,17 @@ def total_to_date_by_country(country: str) -> t.Dict[str, t.Union[dd, str, int]]
         record = session.query(
             func.max(Covid19.record_date).label('date'),
             func.sum(Covid19.new_cases).label('total_cases'),
-            func.sum(Covid19.new_death).label('total_death')
+            func.sum(Covid19.new_death).label('total_death'),
+            Covid19.country_name
         ).group_by(
-            Covid19.countries_iso_alpha_2
+            Covid19.country_name
         ).filter(
             Covid19.countries_iso_alpha_2 == country_upper,
             Covid19.record_date <= arguments['date']
         ).one()
         result = COVID19_SCHEMA.load({
             "date": record.date,
-            "country": country_upper,
+            "country": record.country_name,
             "death": record.total_death,
             "cases": record.total_cases,
         })

@@ -102,7 +102,7 @@ class CountryTotalTests(DBTestCase):
         response = self.client.get('/UA?date=2020-05-27')
         expect = {
             'cases': 100,
-            'country': 'UA',
+            'country': 'Ukraine',
             'date': '2020-05-27',
             'death': 10
         }
@@ -112,7 +112,7 @@ class CountryTotalTests(DBTestCase):
         response = self.client.get('/ua?date=2020-05-28')
         expect = {
             'cases': 150,
-            'country': 'UA',
+            'country': 'Ukraine',
             'date': '2020-05-28',
             'death': 15
         }
@@ -123,7 +123,7 @@ class CountryTotalTests(DBTestCase):
         response = self.client.get('/UA?date=2020-05-29')
         expect = {
             'cases': 150,
-            'country': 'UA',
+            'country': 'Ukraine',
             'date': '2020-05-28',
             'death': 15
         }
