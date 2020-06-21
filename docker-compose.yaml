@@ -4,6 +4,17 @@ volumes:
   pg_data:
 
 services:
+  app_launch:
+    build: .
+    image: covid19-service:dev
+    ports:
+    - "5000:5000"
+    volumes:
+    - .:/app
+    depends_on:
+      - postgres
+      - rabbit
+
   postgres:
     image: postgres:12.2-alpine
     ports:
