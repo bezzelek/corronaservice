@@ -10,6 +10,12 @@ up:
 down:
 	docker-compose down
 
+build:
+	docker-compose build
+
+sh:
+	docker-compose run --rm app_launch bash
+
 logs:
 	docker-compose logs -f
 
@@ -19,26 +25,26 @@ psql:
 
 ### Project shortcuts
 create-tables:
-	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" python src/scrapping/models.py
+	docker-compose run --rm app_launch python src/scrapping/models.py
 
 scrap-data:
-	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" python src/scrapping/tasks.py
+	docker-compose run --rm app_launch python src/scrapping/tasks.py
 
 celery:
-	PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" celery -E -A root worker --beat --loglevel=info
+	docker-compose run --rm app_launch celery -E -A root worker --beat --loglevel=info
 
 ### Linters
 safety:
-	@safety check --full-report
+	@docker-compose run --rm app_launch safety check --full-report
 
 bandit:
-	@bandit -c bandit.yml -r src
+	@docker-compose run --rm app_launch bandit -c bandit.yml -r src
 
 pylint:
-	@pylint src
+	@docker-compose run --rm app_launch pylint src
 
 mypy:
-	@mypy src
+	@docker-compose run --rm app_launch mypy src
 
 pytest:
-	@PYTHONPATH="$${PYTHONPATH}:$${PWD}/src" DB_URL=postgres://postgres@127.0.0.1:5432/tests pytest -ra --cov=src
+	@docker-compose run --rm app_launch DB_URL=postgres://postgres@postgres:5432/tests pytest -ra --cov=src
