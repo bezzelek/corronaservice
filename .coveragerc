@@ -4,7 +4,7 @@ omit=*/__init__*
      */test*
 
 [report]
-fail_under=50
+fail_under=75
 skip_covered=True
 sort=Cover
 exclude_lines=if __name__ == '__main__':
