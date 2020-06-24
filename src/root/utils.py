@@ -1,3 +1,5 @@
+""" Project utils. """
+
 import typing as t
 from unittest.case import TestCase
 
@@ -8,6 +10,7 @@ from root.db import db
 
 
 class DBTestCase(TestCase):
+    """ Tests initialization. """
     client: t.ClassVar[FlaskClient]
 
     @classmethod

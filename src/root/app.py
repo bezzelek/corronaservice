@@ -1,3 +1,5 @@
+""" Main module which starts application. It contains Flask app declaration and healthcheck controller. """
+
 import typing as t
 from socket import gethostname
 
@@ -16,11 +18,13 @@ app.config.update({
 
 
 class ErrorSchema(Schema):
+    """ Unified schema of server errors. """
     message = fields.Str()
     details = fields.Dict(keys=fields.Str(), values=fields.List(fields.Str()), required=False)
 
 
 class StatusSchema(Schema):
+    """ Unified schema of healthcheck endpoint. """
     service = fields.Str()
     debug = fields.Bool()
     host = fields.Str()
@@ -41,6 +45,7 @@ def index():
 
 @app.errorhandler(ValidationError)
 def handle_validation_error(error: ValidationError):
+    """ Handler for marshmallow validation error. """
     return ErrorSchema().load({
         'message': 'Bad Request',
         'details': error.messages
@@ -51,6 +56,7 @@ def handle_validation_error(error: ValidationError):
 @app.errorhandler(NoResultFound)
 @app.errorhandler(MultipleResultsFound)
 def handle_db_error(_error: t.Union[NoResultFound, MultipleResultsFound]):
+    """ Handler for db errors and unexpected paths. """
     return ErrorSchema().load({
         'message': 'Not Found',
     }), 404
@@ -58,6 +64,7 @@ def handle_db_error(_error: t.Union[NoResultFound, MultipleResultsFound]):
 
 @app.errorhandler(500)
 def handle_unexpected_error(_error: Exception):
+    """ Handler for unexpected errors. """
     return ErrorSchema().load({
         'message': 'Internal Server Error',
     }), 500

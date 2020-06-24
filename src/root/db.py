@@ -1,3 +1,5 @@
+""" Module contains db objects. """
+
 import typing as t
 from contextlib import contextmanager
 
@@ -20,6 +22,7 @@ session = db.session
 
 @contextmanager
 def connection() -> t.Iterator[Session]:
+    """ Context manager for creation of separate db session. """
     new_session = db.create_scoped_session()
     try:
         yield new_session
@@ -33,6 +36,7 @@ def connection() -> t.Iterator[Session]:
 
 @contextmanager
 def transaction() -> t.Iterator[Session]:
+    """ Context manager for markup of transactions. """
     try:
         yield session
         session.commit()
