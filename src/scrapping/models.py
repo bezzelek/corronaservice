@@ -5,7 +5,7 @@ from datetime import datetime, date
 
 from sqlalchemy import Column, Integer, String, Date, UniqueConstraint
 
-from root.db import BaseModel, engine
+from root.db import BaseModel, db
 
 
 class Covid19(BaseModel):  # type: ignore
@@ -58,4 +58,4 @@ class Covid19(BaseModel):  # type: ignore
 
 
 if __name__ == '__main__':
-    BaseModel.metadata.create_all(engine)
+    db.create_all()

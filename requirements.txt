@@ -2,10 +2,11 @@
 flask==1.1.2
 
 # db
-SQLAlchemy==1.3.16
+sqlalchemy==1.3.17
 psycopg2-binary==2.8.5
+flask-sqlalchemy==2.4.3
 
 # other
 selenium==3.141.0
-marshmallow==3.6.0
-celery==4.4.2
+marshmallow==3.6.1
+celery==4.4.6

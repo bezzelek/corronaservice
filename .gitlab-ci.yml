@@ -1,0 +1,111 @@
+variables:
+  CI_IMAGE: ${CI_REGISTRY_IMAGE}/ci:${CI_COMMIT_SHORT_SHA}
+  MASTER_IMAGE: ${CI_REGISTRY_IMAGE}/ci:latest
+
+  RC_IMAGE: ${CI_REGISTRY_IMAGE}/rc:${CI_COMMIT_SHORT_SHA}
+  PROD_IMAGE: ${CI_REGISTRY_IMAGE}/prod:${CI_COMMIT_TAG}
+
+  POSTGRES_DB: tests
+  POSTGRES_USER: postgres
+  POSTGRES_HOST_AUTH_METHOD: trust
+  DB_URL: postgres://postgres@postgres:5432/tests
+
+stages:
+  - pre
+  - test
+  - build
+
+
+# Preparation
+cooking:
+  image: docker:stable
+  stage: pre
+  except:
+    - master
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker pull ${MASTER_IMAGE} || true
+  script:
+    - docker build --cache-from ${MASTER_IMAGE} -t ${CI_IMAGE} .
+    - docker push ${CI_IMAGE}
+
+cooking-master:
+  image: docker:stable
+  stage: pre
+  only:
+    - master
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker pull ${CI_IMAGE} || true
+  script:
+    - docker build --cache-from ${CI_IMAGE} -t ${MASTER_IMAGE} .
+    - docker push ${MASTER_IMAGE}
+    - docker tag ${MASTER_IMAGE} ${CI_IMAGE}
+    - docker push ${CI_IMAGE}
+
+
+# Linting, testing and collecting code metrics
+image: ${CI_IMAGE}
+
+safety:
+  stage: test
+  script:
+    - safety check --full-report
+
+bandit:
+  stage: test
+  script:
+    - bandit -c bandit.yml -r src
+
+mypy:
+  stage: test
+  script:
+    - mypy src
+
+pylint:
+  stage: test
+  script:
+    - PYTHONPATH=${PWD}/src pylint src
+
+pytest:
+  stage: test
+  services:
+    - postgres:12.2-alpine
+  script:
+    - PYTHONPATH=${PWD}/src pytest -ra --cov=src tests
+
+
+### Build latest images
+#build-master:
+#  image: docker:stable
+#  services:
+#    - docker:stable-dind
+#  stage: build
+#  only:
+#    - master
+#  before_script:
+#    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+#    - docker pull ${CI_IMAGE} || true
+#  script:
+#    - docker build --cache-from ${CI_IMAGE} --build-arg image=${CI_IMAGE} -t ${RC_IMAGE} -f Dockerfile.prod .
+#    - docker push ${RC_IMAGE}
+#
+#
+#### Build release images
+#build-release:
+#  image: docker:stable
+#  services:
+#    - docker:stable-dind
+#  stage: build
+#  only:
+#    - tags
+#  before_script:
+#    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+#    - docker pull ${CI_IMAGE} || true
+#  script:
+#    - docker build --cache-from ${CI_IMAGE} --build-arg image=${CI_IMAGE} -t ${PROD_IMAGE} -f Dockerfile.prod .
+#    - docker push ${PROD_IMAGE}

@@ -4,8 +4,8 @@ from datetime import date
 from flask.testing import FlaskClient
 from flask import Response
 
-from helpers.testing import DBTestCase
-from root.db import session_scope
+from root.utils import DBTestCase
+from root.db import connection
 from scrapping.models import Covid19
 from app import app
 
@@ -15,6 +15,8 @@ class AppTests(DBTestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        app.debug = False  # disable debug to enable error handlers
+
         @app.route('/e')
         def unexpected_error():
             raise Exception
@@ -35,7 +37,7 @@ class CountryByDateTests(DBTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        with session_scope() as session:
+        with connection() as session:
             session.add(
                 Covid19(
                     record_date=date(2020, 5, 27),
@@ -80,7 +82,7 @@ class CountryTotalTests(DBTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        with session_scope() as session:
+        with connection() as session:
             session.add_all([
                 Covid19(
                     record_date=date(2020, 5, 27),
@@ -148,7 +150,7 @@ class WorldTotalTests(DBTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        with session_scope() as session:
+        with connection() as session:
             session.add_all([
                 Covid19(
                     record_date=date(2020, 5, 27),
@@ -212,7 +214,7 @@ class WorldTotalByDateTests(DBTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        with session_scope() as session:
+        with connection() as session:
             session.add_all([
                 Covid19(
                     record_date=date(2020, 5, 27),

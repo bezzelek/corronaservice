@@ -14,5 +14,7 @@ RUN apk add --no-cache --virtual build \
     && pip install --no-cache-dir -r /app/requirements.dev.txt \
     && apk del build
 
-ENV PYTHONPATH "$PYTHONPATH:/app/src"
+ENV PYTHONPATH="$PYTHONPATH:/app/src" \
+    FLASK_ENV="development"
+
 WORKDIR /app
