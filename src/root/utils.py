@@ -3,8 +3,8 @@ from unittest.case import TestCase
 
 from flask.testing import FlaskClient
 
-from app import app
-from root.db import BaseModel, engine
+from root.app import app
+from root.db import db
 
 
 class DBTestCase(TestCase):
@@ -13,5 +13,5 @@ class DBTestCase(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.client = app.test_client()
-        BaseModel.metadata.drop_all(engine)
-        BaseModel.metadata.create_all(engine)
+        db.drop_all()
+        db.create_all()

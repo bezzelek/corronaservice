@@ -2,8 +2,10 @@
 
 from os import getenv
 
-DATA_FILENAME = 'WHO-COVID-19-global-data.csv'
+
+DEBUG = getenv('DEBUG', '1') in {'1', 'true', 'True'}
 DATABASE_URL = getenv('DB_URL', 'postgres://postgres@postgres:5432/covid19')
 BROKER_URL = getenv('MB_URL', 'amqp://guest:guest@rabbit:5672/')
-CELERY_WORKERS = getenv('CELERY_WORKERS', 1)
-DEBUG = getenv('DEBUG', '1') in {'1', 'true', 'True'}
+CELERY_WORKERS = int(getenv('CELERY_WORKERS', '1'))
+
+DATA_FILENAME = 'WHO-COVID-19-global-data.csv'

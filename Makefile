@@ -47,4 +47,4 @@ mypy:
 	@docker-compose run --rm app_launch mypy src
 
 pytest:
-	@docker-compose run --rm app_launch DB_URL=postgres://postgres@postgres:5432/tests pytest -ra --cov=src
+	@docker-compose run --rm -e DB_URL=postgres://postgres@postgres:5432/tests app_launch pytest -ra --cov=src

@@ -7,7 +7,7 @@ from flask import request
 from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
-from root.db import session_scope
+from root.db import session
 from scrapping.bp import bp
 from scrapping.models import Covid19
 from scrapping.schemas import ARGUMENTS_SCHEMA, COVID19_SCHEMA
@@ -23,12 +23,11 @@ def country_by_date(country: str, date: str) -> t.Dict[str, t.Union[dd, str, int
     """
     country_upper = country.upper()
     arguments = ARGUMENTS_SCHEMA.load({'date': date})
-    with session_scope() as session:
-        record = session.query(Covid19).filter(
-            Covid19.countries_iso_alpha_2 == country_upper,
-            Covid19.record_date == arguments['date']
-        ).one()
-        result = COVID19_SCHEMA.dump(record)
+    record = session.query(Covid19).filter(
+        Covid19.countries_iso_alpha_2 == country_upper,
+        Covid19.record_date == arguments['date']
+    ).one()
+    result = COVID19_SCHEMA.dump(record)
     return result
 
 
@@ -42,24 +41,23 @@ def total_to_date_by_country(country: str) -> t.Dict[str, t.Union[dd, str, int]]
     """
     country_upper = country.upper()
     arguments = ARGUMENTS_SCHEMA.load(request.args)
-    with session_scope() as session:
-        record = session.query(
-            func.max(Covid19.record_date).label('date'),
-            func.sum(Covid19.new_cases).label('total_cases'),
-            func.sum(Covid19.new_death).label('total_death'),
-            Covid19.country_name
-        ).group_by(
-            Covid19.country_name
-        ).filter(
-            Covid19.countries_iso_alpha_2 == country_upper,
-            Covid19.record_date <= arguments['date']
-        ).one()
-        result = COVID19_SCHEMA.load({
-            "date": record.date,
-            "country": record.country_name,
-            "death": record.total_death,
-            "cases": record.total_cases,
-        })
+    record = session.query(
+        func.max(Covid19.record_date).label('date'),
+        func.sum(Covid19.new_cases).label('total_cases'),
+        func.sum(Covid19.new_death).label('total_death'),
+        Covid19.country_name
+    ).group_by(
+        Covid19.country_name
+    ).filter(
+        Covid19.countries_iso_alpha_2 == country_upper,
+        Covid19.record_date <= arguments['date']
+    ).one()
+    result = COVID19_SCHEMA.load({
+        "date": record.date,
+        "country": record.country_name,
+        "death": record.total_death,
+        "cases": record.total_cases,
+    })
     return COVID19_SCHEMA.dump(result)
 
 
@@ -72,20 +70,19 @@ def world_total_to_date() -> t.Dict[str, t.Union[dd, str, int]]:
     World.
     """
     arguments = ARGUMENTS_SCHEMA.load(request.args)
-    with session_scope() as session:
-        record = session.query(
-            func.max(Covid19.record_date).label('date'),
-            func.sum(Covid19.new_cases).label('total_cases'),
-            func.sum(Covid19.new_death).label('total_death')
-        ).filter(Covid19.record_date <= arguments['date']).one()
-        if record.date is None:
-            raise NoResultFound
-        result = COVID19_SCHEMA.load({
-            "date": record.date,
-            "country": 'World',
-            "death": record.total_death,
-            "cases": record.total_cases,
-        })
+    record = session.query(
+        func.max(Covid19.record_date).label('date'),
+        func.sum(Covid19.new_cases).label('total_cases'),
+        func.sum(Covid19.new_death).label('total_death')
+    ).filter(Covid19.record_date <= arguments['date']).one()
+    if record.date is None:
+        raise NoResultFound
+    result = COVID19_SCHEMA.load({
+        "date": record.date,
+        "country": 'World',
+        "death": record.total_death,
+        "cases": record.total_cases,
+    })
     return COVID19_SCHEMA.dump(result)
 
 
@@ -97,17 +94,16 @@ def world_total_by_date(date: str) -> t.Dict[str, t.Union[dd, str, int]]:
     :return: Calculated data about amount of cases and death in whole World during specific day.
     """
     arguments = ARGUMENTS_SCHEMA.load({'date': date})
-    with session_scope() as session:
-        record = session.query(
-            func.sum(Covid19.new_cases).label('new_cases'),
-            func.sum(Covid19.new_death).label('new_death')
-        ).filter(Covid19.record_date == arguments['date']).one()
-        if record.new_cases is None:
-            raise NoResultFound
-        result = COVID19_SCHEMA.load({
-            "date": arguments['date'],
-            "country": 'World',
-            "cases": record.new_cases,
-            "death": record.new_death,
-        })
+    record = session.query(
+        func.sum(Covid19.new_cases).label('new_cases'),
+        func.sum(Covid19.new_death).label('new_death')
+    ).filter(Covid19.record_date == arguments['date']).one()
+    if record.new_cases is None:
+        raise NoResultFound
+    result = COVID19_SCHEMA.load({
+        "date": arguments['date'],
+        "country": 'World',
+        "cases": record.new_cases,
+        "death": record.new_death,
+    })
     return COVID19_SCHEMA.dump(result)

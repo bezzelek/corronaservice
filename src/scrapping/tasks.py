@@ -8,7 +8,7 @@ from celery.task import periodic_task
 from sqlalchemy import func
 
 from root.settings import DATA_FILENAME
-from root.db import session_scope
+from root.db import connection
 from scrapping.models import Covid19
 from scrapping.scrapper import download_csv
 
@@ -20,7 +20,7 @@ def store_csv_data() -> None:
     source.
     """
     csv_path = download_csv(DATA_FILENAME)
-    with session_scope() as session, open(csv_path) as covidcsv:
+    with connection() as session, open(csv_path) as covidcsv:
         reader = csv.reader(covidcsv)
         next(reader)  # skip table headers
         covid19_buffer: t.List[Covid19] = []
