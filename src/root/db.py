@@ -13,6 +13,7 @@ from root.settings import DATABASE_URL, DEBUG
 app.config.update({
     'SQLALCHEMY_DATABASE_URI': DATABASE_URL,
     'SQLALCHEMY_ECHO': DEBUG,
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
 })
 db = SQLAlchemy(app)
 

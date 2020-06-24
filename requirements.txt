@@ -10,3 +10,7 @@ flask-sqlalchemy==2.4.3
 selenium==3.141.0
 marshmallow==3.6.1
 celery==4.4.6
+
+# monitoring
+blinker==1.4.0
+sentry-sdk==0.15.1

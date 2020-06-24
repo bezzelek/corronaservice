@@ -2,7 +2,9 @@
 
 from datetime import date as dd
 
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, pre_load, post_load
+
+from scrapping.models import Covid19
 
 
 class LenientDate(fields.Date):
@@ -26,5 +28,31 @@ class ArgumentsSchema(Schema):
     date = fields.Date(missing=dd.today)
 
 
+class Covid19LoadSchema(Schema):
+    """ Schema for loading raw covid19 data. """
+    __model__ = Covid19
+
+    record_date = LenientDate()
+    countries_iso_alpha_2 = fields.Str()
+    country_name = fields.Str(required=False)
+    new_death = fields.Int()
+    new_cases = fields.Int()
+
+    @staticmethod
+    @pre_load
+    def normalize_data(data, **_kwargs):
+        """ Use ISO as Country when it empty, trim date timestamp to the date. """
+        data['record_date'] = data['record_date'][:10]
+        if data.get('country_name') is None:
+            data['country_name'] = data['countries_iso_alpha_2']
+        return data
+
+    @post_load
+    def to_model(self, data, **_kwargs):
+        """ Serialization data into Alchemy model. """
+        return self.__model__(**data)
+
+
 COVID19_SCHEMA = Covid19Schema()
+COVID19_LOAD_SCHEMA = Covid19LoadSchema()
 ARGUMENTS_SCHEMA = ArgumentsSchema()
