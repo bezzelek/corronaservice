@@ -8,9 +8,12 @@ flask-sqlalchemy==2.4.3
 
 # other
 selenium==3.141.0
-marshmallow==3.6.1
 celery==4.4.6
 
 # monitoring
 blinker==1.4.0
 sentry-sdk==0.15.1
+
+# api
+marshmallow==3.6.1
+flask-apispec==0.9.0
