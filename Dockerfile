@@ -1,4 +1,8 @@
 FROM python:3.8.3-alpine3.12
+
+ENV PYTHONPATH="$PYTHONPATH:/app/src" \
+    FLASK_ENV="development"
+
 COPY ["requirements.txt", "requirements.dev.txt", "/app/"]
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" > /etc/apk/repositories \
@@ -14,7 +18,5 @@ RUN apk add --no-cache --virtual build \
     && pip install --no-cache-dir -r /app/requirements.dev.txt \
     && apk del build
 
-ENV PYTHONPATH="$PYTHONPATH:/app/src" \
-    FLASK_ENV="development"
-
 WORKDIR /app
+EXPOSE 5000

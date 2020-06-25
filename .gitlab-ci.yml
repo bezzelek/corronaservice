@@ -2,7 +2,6 @@ variables:
   CI_IMAGE: ${CI_REGISTRY_IMAGE}/ci:${CI_COMMIT_SHORT_SHA}
   MASTER_IMAGE: ${CI_REGISTRY_IMAGE}/ci:latest
 
-  RC_IMAGE: ${CI_REGISTRY_IMAGE}/rc:${CI_COMMIT_SHORT_SHA}
   PROD_IMAGE: ${CI_REGISTRY_IMAGE}/prod:${CI_COMMIT_TAG}
 
   POSTGRES_DB: tests
@@ -79,33 +78,17 @@ pytest:
     - PYTHONPATH=${PWD}/src pytest -ra --cov=src tests
 
 
-### Build latest images
-#build-master:
-#  image: docker:stable
-#  services:
-#    - docker:stable-dind
-#  stage: build
-#  only:
-#    - master
-#  before_script:
-#    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-#    - docker pull ${CI_IMAGE} || true
-#  script:
-#    - docker build --cache-from ${CI_IMAGE} --build-arg image=${CI_IMAGE} -t ${RC_IMAGE} -f Dockerfile.prod .
-#    - docker push ${RC_IMAGE}
-#
-#
-#### Build release images
-#build-release:
-#  image: docker:stable
-#  services:
-#    - docker:stable-dind
-#  stage: build
-#  only:
-#    - tags
-#  before_script:
-#    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-#    - docker pull ${CI_IMAGE} || true
-#  script:
-#    - docker build --cache-from ${CI_IMAGE} --build-arg image=${CI_IMAGE} -t ${PROD_IMAGE} -f Dockerfile.prod .
-#    - docker push ${PROD_IMAGE}
+### Build release images
+build-release:
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  stage: build
+  only:
+    - tags
+  before_script:
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker pull ${CI_IMAGE} || true
+  script:
+    - docker build --cache-from ${CI_IMAGE} --build-arg image=${CI_IMAGE} -t ${PROD_IMAGE} -f prod.Dockerfile .
+    - docker push ${PROD_IMAGE}
