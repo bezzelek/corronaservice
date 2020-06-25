@@ -14,7 +14,7 @@ build:
 	docker-compose build
 
 sh:
-	docker-compose run --rm app_launch bash
+	docker-compose run -p 5000:5000 --rm app_launch bash
 
 logs:
 	docker-compose logs -f

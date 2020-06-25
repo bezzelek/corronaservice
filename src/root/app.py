@@ -26,6 +26,7 @@ class ErrorSchema(Schema):
 
 class StatusSchema(Schema):
     """ Unified schema of healthcheck endpoint. """
+    version = fields.Str()
     service = fields.Str()
     debug = fields.Bool()
     host = fields.Str()
@@ -43,6 +44,7 @@ def index():
     :return: Information about service and it's parameters.
     """
     return STATUS_SCHEMA.load({
+        'version': '0.0.0',
         'service': app.name,
         'debug': app.debug,
         'host': gethostname()
