@@ -4,6 +4,7 @@ import typing as t
 from socket import gethostname
 
 from flask import Flask
+from flask_apispec import marshal_with
 from marshmallow import Schema, fields, ValidationError
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
@@ -30,13 +31,18 @@ class StatusSchema(Schema):
     host = fields.Str()
 
 
+STATUS_SCHEMA = StatusSchema()
+ERROR_SCHEMA = ErrorSchema()
+
+
 @app.route('/')
+@marshal_with(STATUS_SCHEMA, code=200)
 def index():
     """ Healthcheck end point.
 
     :return: Information about service and it's parameters.
     """
-    return StatusSchema().load({
+    return STATUS_SCHEMA.load({
         'service': app.name,
         'debug': app.debug,
         'host': gethostname()
@@ -46,10 +52,10 @@ def index():
 @app.errorhandler(ValidationError)
 def handle_validation_error(error: ValidationError):
     """ Handler for marshmallow validation error. """
-    return ErrorSchema().load({
-        'message': 'Bad Request',
+    return ERROR_SCHEMA.load({
+        'message': 'Unprocessable Entity',
         'details': error.messages
-    }), 400
+    }), 422
 
 
 @app.errorhandler(404)
@@ -57,7 +63,7 @@ def handle_validation_error(error: ValidationError):
 @app.errorhandler(MultipleResultsFound)
 def handle_db_error(_error: t.Union[NoResultFound, MultipleResultsFound]):
     """ Handler for db errors and unexpected paths. """
-    return ErrorSchema().load({
+    return ERROR_SCHEMA.load({
         'message': 'Not Found',
     }), 404
 
@@ -65,6 +71,6 @@ def handle_db_error(_error: t.Union[NoResultFound, MultipleResultsFound]):
 @app.errorhandler(500)
 def handle_unexpected_error(_error: Exception):
     """ Handler for unexpected errors. """
-    return ErrorSchema().load({
+    return ERROR_SCHEMA.load({
         'message': 'Internal Server Error',
     }), 500

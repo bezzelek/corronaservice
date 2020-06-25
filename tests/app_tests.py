@@ -74,7 +74,7 @@ class CountryByDateTests(DBTestCase):
 
     def test_bad_date_format(self):
         response = self.client.get('/UA/20200527')
-        self.assertEquals(response.status_code, 400, msg='Wrong date. Success validation.')
+        self.assertEquals(response.status_code, 422, msg='Wrong date. Success validation.')
 
 
 class CountryTotalTests(DBTestCase):
@@ -142,7 +142,7 @@ class CountryTotalTests(DBTestCase):
 
     def test_bad_date_format(self):
         response = self.client.get('/UA?date=20200527')
-        self.assertEquals(response.status_code, 400, msg='Wrong date. Success validation.')
+        self.assertEquals(response.status_code, 422, msg='Wrong date. Success validation.')
 
 
 class WorldTotalTests(DBTestCase):
@@ -206,7 +206,7 @@ class WorldTotalTests(DBTestCase):
 
     def test_bad_date_format(self):
         response = self.client.get('/world?date=20200527')
-        self.assertEquals(response.status_code, 400, msg='Wrong date. Success validation.')
+        self.assertEquals(response.status_code, 422, msg='Wrong date. Success validation.')
 
 
 class WorldTotalByDateTests(DBTestCase):
@@ -245,7 +245,7 @@ class WorldTotalByDateTests(DBTestCase):
 
     def test_bad_date_format(self):
         response = self.client.get('/world/20200527')
-        self.assertEquals(response.status_code, 400, msg='Wrong date. Success validation.')
+        self.assertEquals(response.status_code, 422, msg='Wrong date. Success validation.')
 
     def test_no_result_found(self):
         response = self.client.get('/world/2020-05-29')

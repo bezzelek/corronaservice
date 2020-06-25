@@ -4,6 +4,7 @@ from datetime import date as dd
 
 from marshmallow import Schema, fields, pre_load, post_load
 
+from root.utils import APISchema
 from scrapping.models import Covid19
 
 
@@ -15,12 +16,12 @@ class LenientDate(fields.Date):
         return super()._deserialize(value, attr, data, **kwargs)
 
 
-class Covid19Schema(Schema):
+class Covid19Schema(APISchema):
     """ Main schema for our data. """
-    country = fields.Str(required=True, attribute='country_name')
-    date = LenientDate(required=True, attribute='record_date')
-    cases = fields.Int(required=True, attribute='new_cases')
-    death = fields.Int(required=True, attribute='new_death')
+    country = fields.Str(attribute='country_name')
+    date = LenientDate(attribute='record_date')
+    cases = fields.Int(attribute='new_cases')
+    death = fields.Int(attribute='new_death')
 
 
 class ArgumentsSchema(Schema):
