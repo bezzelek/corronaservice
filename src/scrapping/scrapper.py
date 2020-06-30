@@ -55,8 +55,8 @@ def download_csv(filename: str) -> Path:
         download_file.unlink()
 
     with webdriver.Chrome(options=get_config(download_folder)) as driver:
-        driver.get("https://who.sprinklr.com/")
-        presence = presence_of_element_located([By.XPATH, "//div[@role='button']"])
+        driver.get("https://covid19.who.int/")
+        presence = presence_of_element_located([By.XPATH, "//div/a[@download]"])
         download_button = WebDriverWait(driver, 30).until(presence)
 
         download_button.click()
