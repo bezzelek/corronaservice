@@ -1,5 +1,5 @@
 # Covid19 service
 
-> **Version:** 0.0.0 
+> **Version:** 0.1.0 
 
 > **Work in progress**

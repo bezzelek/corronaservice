@@ -44,7 +44,7 @@ def index():
     :return: Information about service and it's parameters.
     """
     return STATUS_SCHEMA.load({
-        'version': '0.0.0',
+        'version': '0.1.0',
         'service': app.name,
         'debug': app.debug,
         'host': gethostname()
